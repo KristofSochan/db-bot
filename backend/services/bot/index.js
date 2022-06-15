@@ -7,14 +7,15 @@ import DiscordJS, { Client, Intents } from 'discord.js';
 debug('connecting to discord bot');
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const prefix = ';';
 
 // When the client is ready, run this code (only once)
 client.once('ready', () => {
 	debug('connected to discord bot');
 
-  // set a guildId for testing (global commands take up to an hour to register)
-  const guildId = '986456603840626808';
+  // Code to set up / commands if needed
+  /*const guildId = '986456603840626808';
   const guild = client.guilds.cache.get(guildId);
   let commands;
 
@@ -23,40 +24,18 @@ client.once('ready', () => {
   }
   else { // fetch global commands
     commands = client.application.commands;
-  }
+  }*/
 
-  commands.create({
-    name: 'find',
-    description: 'finds all entries that contain the entered text',
-    options: [
-      {
-        name: 'query',
-        description: 'enter the text you wish to find in the DB',
-        required: true,
-        type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
-      },
-      {
-        name: 'query2',
-        description: 'enter the text you wish to find in the DB',
-        required: true,
-        type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
-      }
-    ]
-  });
 });
 
-client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isCommand()) {
-    return;
-  }
+client.on('messageCreate', message => {
+  if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-  const { commandName, options } = interaction;
+  const args = message.content.slice(prefix.length).split(/ +/);
+  const command = args.shift().toLowerCase();
 
-  if (commandName === 'find') {
-    interaction.reply({
-      content: 'Fetched your DB data', // To do: connect to DB (find all rows with matching text)
-      ephermeral: true
-    });
+  if (command === 'find') {
+    message.channel.send('Fetching DB data');
   }
 });
 
