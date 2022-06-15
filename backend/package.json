@@ -5,8 +5,23 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm start"
+    "start": "node -r dotenv/config app.js dotenv_config_path=/etc/secrets/.env",
+    "dev": "nodemon -r dotenv/config app.js"
   },
   "author": "Adam Mikacich and Kristof Sochan",
-  "license": "UNLICENSED"
+  "type": "module",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "postgres": "^3.2.4"
+  },
+  "devDependencies": {
+    "eslint": "^8.17.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "nodemon": "^2.0.16"
+  }
 }
