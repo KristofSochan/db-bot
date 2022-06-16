@@ -2,25 +2,24 @@ import debugModule from 'debug';
 const debug = debugModule('db');
 const error = debugModule('error');
 
-//mport nodepostgres, { Pool, Client } from 'pg';
-import * as pg from 'pg'
-const { Pool} = pg
+
+import pg from 'pg';
+const { Pool } = pg;
 
 debug('connecting to postgres');
+const pool = new Pool({
+  user: process.env.AWS_RDS_USERNAME,
+  host: process.env.AWS_RDS_HOST,
+  database: process.env.AWS_RDS_DATABASE,
+  password: process.env.AWS_RDS_PASSWORD,
+  port: process.env.AWS_RDS_PORT
+});
 
-const pool = new Pool()
-pool.query('SELECT NOW()', (err, res) => {
-  console.log(err, res)
-  pool.end()
-})
-// you can also use async/await
-const res = await pool.query('SELECT NOW()')
-await pool.end()
-// clients will also use environment variables
-// for connection information
-const client = new Client()
-await client.connect()
-const res = await client.query('SELECT NOW()')
-await client.end()
+try {
+  const res = await pool.query('SELECT version()')
+  debug('connected to',res.rows[0].version)
+}catch (err) {
+  error('Could not connect to postgres server', err);
+};
 
-export default sql
+export default pool;
