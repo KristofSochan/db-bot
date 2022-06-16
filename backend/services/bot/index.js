@@ -40,7 +40,7 @@ client.on('messageCreate', message => {
         
         let details = res.rows[0]; // sql json object
         let msg = '\```json\n{'
-        for (let key in details) {
+        for (const key in details) {
             if (details.hasOwnProperty(key)) {
                 msg = msg + "\n \"" + key + "\": \"" + details[key] + "\","
             }                        
