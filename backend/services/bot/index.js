@@ -16,13 +16,14 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', message => {
+  debug('message sent')
   if (!message.content.startsWith(prefix) || message.author.bot) return;
 
   const args = message.content.slice(prefix.length).split(/ +/);
   const command = args.shift().toLowerCase();
 
   // Add coordinates
-  if (/^\d/.test(command)) { // if command starts with a digit
+  if (/^\d/.test(command) || /^-/.test(command)) { // if command starts with a digit or negative digit
     debug('Adding coord');
     
     const description = args.join(' ');
