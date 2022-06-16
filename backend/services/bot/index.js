@@ -2,7 +2,8 @@ import debugModule from 'debug';
 const debug = debugModule('bot');
 const error = debugModule('error');
 
-import DiscordJS, { Client, Intents } from 'discord.js';
+/*import DiscordJS, { Client, Intents } from 'discord.js';
+import sql from '../db/index.js';
 
 debug('connecting to discord bot');
 
@@ -10,22 +11,8 @@ debug('connecting to discord bot');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 const prefix = ';';
 
-// When the client is ready, run this code (only once)
 client.once('ready', () => {
 	debug('connected to discord bot');
-
-  // Code to set up / commands if needed
-  /*const guildId = '986456603840626808';
-  const guild = client.guilds.cache.get(guildId);
-  let commands;
-
-  if (guild) {
-    commands = guild.commands;
-  }
-  else { // fetch global commands
-    commands = client.application.commands;
-  }*/
-
 });
 
 client.on('messageCreate', message => {
@@ -34,10 +21,41 @@ client.on('messageCreate', message => {
   const args = message.content.slice(prefix.length).split(/ +/);
   const command = args.shift().toLowerCase();
 
+  // Add coordinates
+  if (/^\d/.test(command)) { // if command starts with a digit
+    debug('Adding coord');
+    
+    const description = args.join(' ');
+
+    let date_entered = new Date();
+    date_entered = date_entered.toISOString().substring(0,10); // yyyy-mm-dd format
+
+    const stmt = 'INSERT INTO mc_1.world_1(date_entered, dimension, coordinates, description) VALUES($1, $2, $3, $4) RETURNING *'
+    const values = [date_entered, 'overworld', command, description]
+    // to-do: add option for other dimensions via -nether, -end after description
+
+    sql
+      .query(stmt, values)
+      .then(res => {
+        console.log(res.rows[0]);
+        message.channel.send(`Saved: ${res}`);
+      })
+      .catch(e => {
+        console.error(e.stack)
+        message.channel.send(`Error: ${e.stack}`);
+      })
+
+    debug('Added coord to DB');
+  }
+
+  // Find coordinates
   if (command === 'find') {
     message.channel.send('Fetching DB data');
+    message.channel.send(command);
+    message.channel.send('args: ' + args);
   }
+
 });
 
 // Login to Discord with your client's token
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN);*/
