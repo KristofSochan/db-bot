@@ -2,14 +2,14 @@ import debugModule from 'debug';
 const debug = debugModule('bot');
 const error = debugModule('error');
 
-import DiscordJS, { Client, Intents } from 'discord.js';
+import { Client, Intents } from 'discord.js';
 import pool from '../db/index.js';
 
 debug('connecting to discord bot');
 
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-const prefix = ';';
+const PREFIX = ';';
 
 client.once('ready', () => {
 	debug('connected to discord bot');
@@ -17,9 +17,9 @@ client.once('ready', () => {
 
 client.on('messageCreate', message => {
   debug('message sent')
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
+  if (!message.content.startsWith(PREFIX) || message.author.bot) return;
 
-  const args = message.content.slice(prefix.length).split(/ +/);
+  const args = message.content.slice(PREFIX.length).split(/ +/);
   const command = args.shift().toLowerCase();
 
   // Add coordinates
@@ -31,8 +31,12 @@ client.on('messageCreate', message => {
     let date_entered = new Date();
     date_entered = date_entered.toISOString().substring(0,10); // yyyy-mm-dd format
 
-    const stmt = 'INSERT INTO mc_1.world_1(date_entered, dimension, coordinates, description) VALUES($1, $2, $3, $4) RETURNING *'
-    const values = [date_entered, 'Overworld', command, description]
+    const stmt = `
+      INSERT INTO mc_1.world_1(date_entered, dimension, coordinates, description)
+      VALUES($1, $2, $3, $4)
+      RETURNING *
+    `;
+    const values = [date_entered, 'Overworld', command, description];
     // to-do: add option for other dimensions via -nether, -end after description
 
     pool
@@ -43,7 +47,7 @@ client.on('messageCreate', message => {
         let msg = '\```json\n{'
         for (const key in details) {
             if (details.hasOwnProperty(key)) {
-                msg = msg + "\n \"" + key + "\": \"" + details[key] + "\","
+                msg = msg + "\n \"" + key + "\": \"" + details[key] + "\",";
             }                        
         }
         msg = msg.substring(0, msg.length - 1)
@@ -56,7 +60,6 @@ client.on('messageCreate', message => {
       .catch(e => {
         error(e.stack)
       })
-
   }
 
   // Find coordinates
@@ -65,7 +68,6 @@ client.on('messageCreate', message => {
     message.channel.send(command);
     message.channel.send('args: ' + args);
   }
-
 });
 
 // Login to Discord with your client's token

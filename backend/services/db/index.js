@@ -2,7 +2,6 @@ import debugModule from 'debug';
 const debug = debugModule('db');
 const error = debugModule('error');
 
-
 import pg from 'pg';
 const { Pool } = pg;
 
@@ -16,10 +15,10 @@ const pool = new Pool({
 });
 
 try {
-  const res = await pool.query('SELECT version()')
-  debug('connected to',res.rows[0].version)
-}catch (err) {
+  const res = await pool.query('SELECT version()');
+  debug('connected to', res.rows[0].version);
+} catch (err) {
   error('Could not connect to postgres server', err);
-};
+}
 
 export default pool;
