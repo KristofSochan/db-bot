@@ -13,6 +13,12 @@ async function define(app) {
       handleFailure(res, { err });
     }
   });
+
+  app.use('/api/login', (req, res) => {
+    res.send({
+      token: 'test123'
+    });
+  });
 }
 
 export default {
