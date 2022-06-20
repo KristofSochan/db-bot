@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import './index.scss';
 
-async function signinUser(credentials) {
-  return fetch('http://localhost:4000/api/signin', {
+async function signupUser(credentials) {
+  return fetch('http://localhost:4000/api/signup', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -14,23 +13,28 @@ async function signinUser(credentials) {
     .then(data => data.json())
  }
 
-export default function Signin({ setToken }) {
+export default function Signup() {
+  const [email, setEmail] = useState();
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const token = await signinUser({
+    await signupUser({
+      email,
       username,
       password
     });
-    setToken(token);
   }
 
   return(
     <div className="signin center">
       <form onSubmit={handleSubmit} className="modal column">
-        <h1 className="title">Sign In</h1>
+        <h1 className="title">Sign Up</h1>
+        <label className="input">
+          <input type="email" autoComplete="email" onChange={e => setEmail(e.target.value)} required />
+          <span className="floatingLabel">Email</span>
+        </label>
         <label className="input">
           <input type="text" autoComplete="username" onChange={e => setUserName(e.target.value)} required />
           <span className="floatingLabel">Username</span>
@@ -42,12 +46,8 @@ export default function Signin({ setToken }) {
         <div className="actions">
           <button type="submit">Submit</button>
         </div>
-        <p className="or">Or <Link to="/signup"><span>sign up</span></Link></p>
+        <p className="or">Or <Link to="/signin"><span>sign in</span></Link></p>
       </form>
     </div>
   )
-}
-
-Signin.propTypes = {
-  setToken: PropTypes.func.isRequired
 }

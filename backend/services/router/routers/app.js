@@ -14,7 +14,7 @@ async function define(app) {
     }
   });
 
-  app.use('/api/login', (req, res) => {
+  app.use('/api/signin', (req, res) => {
     res.send({
       token: 'test123'
     });
