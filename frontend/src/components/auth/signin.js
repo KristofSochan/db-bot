@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import './index.scss';
 
 async function loginUser(credentials) {
   return fetch('http://localhost:4000/api/login', {
@@ -26,20 +27,21 @@ export default function Login({ setToken }) {
   }
 
   return(
-    <div className="login-wrapper">
-      <h1>Please Log In</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          <p>Username</p>
-          <input type="text" onChange={e => setUserName(e.target.value)}/>
+    <div className="signin center">
+      <form onSubmit={handleSubmit} className="modal column">
+        <h1 class="title">Sign In</h1>
+        <label className="input">
+          <input type="text" autoComplete="username" onChange={e => setUserName(e.target.value)} required />
+          <span className="floatingLabel">Username</span>
         </label>
-        <label>
-          <p>Password</p>
-          <input type="password" onChange={e => setPassword(e.target.value)}/>
+        <label className="input">
+          <input type="password" autoComplete="current-password" onChange={e => setPassword(e.target.value)} required />
+          <span className="floatingLabel">Password</span>
         </label>
-        <div>
+        <div className="actions">
           <button type="submit">Submit</button>
         </div>
+        <p className="or">Or <span>sign up</span></p>
       </form>
     </div>
   )

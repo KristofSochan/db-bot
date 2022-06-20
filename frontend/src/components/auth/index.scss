@@ -1,0 +1,89 @@
+.modal {
+  max-width: 400px;
+  width: 100%;
+  background: white;
+  border-radius: 20px;
+  padding: 50px;
+  text-align: center;
+
+  @media only screen and (max-width: 600px) {
+    padding: 20px;
+  }
+
+  .logo {
+    h1 {
+      color: #000;
+    }
+  }
+  
+  h2 {
+    font-size: 1rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    width: 100%;
+  }
+  
+  p {
+    font-size: 0.9rem;
+    color: #999;
+  }
+
+  .actions {
+    margin: 15px 0;
+  }
+  
+  .or, .forgot {
+    span {
+      text-decoration: underline;
+      color: #1677ed;
+      cursor: pointer;
+    }
+  }
+}
+
+.signin, .signup, .forgotPage, .reset {
+  background: #eee;
+  height: 100vh;
+
+  @media only screen and (max-width: 600px) {
+    background: #fff;
+  }
+}
+
+.input {
+  text-align: left;
+  height: 60px;
+
+  input {
+    width: 100%;
+    margin: 20px 0;
+    border: none;
+    border-bottom: solid 2px #eee;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    height: 35px;
+  }
+
+  input::placeholder {
+    color: #999;
+  }
+
+  input:focus ~ .floatingLabel,
+  input:not(:focus):valid ~ .floatingLabel {
+    top: -70px;
+    font-size: 0.8rem;
+    opacity: 1;
+  }
+
+  .floatingLabel {
+    top: -45px;
+    font-size: 0.9rem;
+    position: relative;
+    transition: 0.1s all;
+    pointer-events: none;
+    color: #999;
+  }
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/dashboard';
 import Preferences from './components/preferences';
-import Login from './components/login';
+import Login from './components/auth/signin';
 import useToken from './useToken';
 
 function App() {
