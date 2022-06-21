@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { FaSpinner } from 'react-icons/fa';
+import { error } from '../common/alert';
 import './index.scss';
 
 async function signinUser(credentials) {
@@ -17,14 +19,23 @@ async function signinUser(credentials) {
 export default function Signin({ setToken }) {
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const token = await signinUser({
-      username,
-      password
-    });
-    setToken(token);
+    if (loading) return;
+    try {
+      setLoading(true);
+      const token = await signinUser({
+        username,
+        password
+      });
+      setToken(token);
+    } catch (err) {
+      error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return(
@@ -40,7 +51,21 @@ export default function Signin({ setToken }) {
           <span className="floatingLabel">Password</span>
         </label>
         <div className="actions">
-          <button type="submit">Submit</button>
+          <button type="submit">
+            {
+              loading ?
+              <span>
+                <FaSpinner
+                  className="spinner"
+                  fill="#000"
+                  width="30px"
+                  height="30px"
+                />
+              </span>
+              :
+              <span>Sign In</span>
+            }
+          </button>
         </div>
         <p className="or">Or <Link to="/signup"><span>sign up</span></Link></p>
       </form>
