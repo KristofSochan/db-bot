@@ -18,7 +18,7 @@ try {
   const res = await pool.query('SELECT version()');
   debug('connected to', res.rows[0].version);
 } catch (err) {
-  error('Could not connect to postgres server', err);
+  error('could not connect to postgres server', err);
 }
 
 export default pool;

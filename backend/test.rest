@@ -1,6 +1,8 @@
-POST http://127.0.0.1:3000/api/db/query HTTP/1.1
+POST http://127.0.0.1:4000/users HTTP/1.1
 content-type: application/json
 
 {
-    "test": "hi"
+    "email": "adam2@gmail.com",
+    "username": "awdoimaw",
+    "password": "aiowejfaowijef"
 }

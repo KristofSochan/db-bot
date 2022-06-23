@@ -9,6 +9,7 @@ import express from 'express';
 const app = express();
 
 import routerApp from './routers/app.js';
+import routerUsers from './routers/users.js';
 
 debug('initializing router');
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use(
 );
 
 await routerApp.define(app);
+await routerUsers.define(app);
 
 app.use(express.static(path.resolve('./../frontend/dist')));
 app.get('*', (req, res) => {
