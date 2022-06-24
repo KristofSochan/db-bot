@@ -46,6 +46,15 @@ async function define(app) {
       return handleFailure(res, { err });
     }
 
+    // check if username is in use
+    try {
+      const { rows } = await pool.query('SELECT * FROM auth.users WHERE username = $1', [username]);
+      if (rows.length > 0) return handleFailure(res, { warn: 'Username address in use' });
+    } catch (err) {
+      console.log(err);
+      return handleFailure(res, { err });
+    }
+
     // hash password and insert into db
     try {
       const passwordHashed = await utils.password.hash(password);
