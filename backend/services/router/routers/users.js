@@ -26,7 +26,7 @@ async function define(app) {
     handleSuccess(res, user);
   });
 
-  app.post('/users', async (req, res) => {
+  app.post('/users/signup', async (req, res) => {
     const { email, username, password } = req.body;
 
     // check if user provided values are valid
@@ -57,7 +57,7 @@ async function define(app) {
     return handleSuccess(res);
   });
 
-  app.post('/users/login', async (req, res) => {
+  app.post('/users/signin', async (req, res) => {
     const { email, password } = req.body;
 
     if (email.length === 0) return handleFailure(res, { warn: 'Email cannot be blank' });

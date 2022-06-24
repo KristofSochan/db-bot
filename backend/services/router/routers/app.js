@@ -14,11 +14,11 @@ async function define(app) {
     }
   });
 
-  app.use('/api/signin', (req, res) => {
-    res.send({
-      token: 'test123'
-    });
-  });
+  // app.use('/api/signin', (req, res) => {
+  //   res.send({
+  //     token: 'test123'
+  //   });
+  // });
 }
 
 export default {

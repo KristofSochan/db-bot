@@ -1,18 +1,27 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { error } from '../common/alert';
+import { error, warning } from '../common/alert';
 import { FaSpinner } from 'react-icons/fa';
 import './index.scss';
+import { baseURL } from '../common/constants.js';
 
-async function signupUser(credentials) {
-  return fetch('http://localhost:4000/api/signup', {
+async function signupUser(content) {
+  const url = baseURL + '/users/signup';
+  const options = {
     method: 'POST',
     headers: {
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(credentials)
-  })
-    .then(data => data.json())
+    body: JSON.stringify(content)
+  };
+  const result = await fetch(url, options);
+  if (result.status !== 200) return error(result.status + ' ' + result.statusText);
+
+  const resultJSON = await result.json();
+  if (resultJSON.warn) return warning(resultJSON.warn);
+
+  return true;
  }
 
 export default function Signup() {

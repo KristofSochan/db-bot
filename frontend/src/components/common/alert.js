@@ -10,6 +10,7 @@ export function error(html, err) {
     html
   });
   if (err) console.error(err);
+  return false;
 }
 
 export function warning(html) {
@@ -17,6 +18,7 @@ export function warning(html) {
     icon: 'warning',
     html
   });
+  return false;
 }
 
 export function info(html) {
@@ -24,6 +26,7 @@ export function info(html) {
     icon: 'info',
     html
   });
+  return false;
 }
 
 export function success(html) {
@@ -31,4 +34,5 @@ export function success(html) {
     icon: 'success',
     html
   });
+  return true;
 }

@@ -13,7 +13,7 @@ GET http://127.0.0.1:4000/users HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUwYzUxZjhkLTc4ZDctNGM2Ni04MjEwLWQ5OTVmYTA1MjNhYiIsImlhdCI6MTY1NjAzMDcwOSwiZXhwIjoxNjU2MTE3MTA5fQ.-ZlzvUtULTa4XfHqFca--ytRjwUbpsZcWAsKcq_AukE
 
 ###
-POST http://127.0.0.1:4000/users/login HTTP/1.1
+POST http://127.0.0.1:4000/users/signin HTTP/1.1
 content-type: application/json
 
 {

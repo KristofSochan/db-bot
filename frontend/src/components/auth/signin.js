@@ -6,7 +6,7 @@ import { error } from '../common/alert';
 import './index.scss';
 
 async function signinUser(credentials) {
-  return fetch('http://localhost:4000/api/signin', {
+  return fetch('http://localhost:4000/users/signin', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -17,7 +17,7 @@ async function signinUser(credentials) {
  }
 
 export default function Signin({ setToken }) {
-  const [username, setUserName] = useState();
+  const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -27,10 +27,11 @@ export default function Signin({ setToken }) {
     try {
       setLoading(true);
       const token = await signinUser({
-        username,
+        email,
         password
       });
-      setToken(token);
+      console.log(token);
+      // setToken(token);
     } catch (err) {
       error(err);
     } finally {
@@ -43,8 +44,8 @@ export default function Signin({ setToken }) {
       <form onSubmit={handleSubmit} className="modal column">
         <h1 className="title">Sign In</h1>
         <label className="input">
-          <input type="text" autoComplete="username" onChange={e => setUserName(e.target.value)} required />
-          <span className="floatingLabel">Username</span>
+          <input type="email" autoComplete="email" onChange={e => setEmail(e.target.value)} required />
+          <span className="floatingLabel">Email</span>
         </label>
         <label className="input">
           <input type="password" autoComplete="current-password" onChange={e => setPassword(e.target.value)} required />
