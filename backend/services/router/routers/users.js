@@ -13,14 +13,16 @@ import {
 } from '../tokens.js';
 
 async function define(app) {
-  app.get('/users/id', authenticateTokenMiddleware, async (req, res) => {
-    handleSuccess(res, req.user);
-  });
-
   app.get('/users', authenticateTokenMiddleware, async (req, res) => {
-    const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
-    if (rows.length != 1) return handleFailure(res, { code: 401 });
-    const user = rows[0];
+    let user;
+    try {
+      const { rows } = await pool.query('SELECT * FROM auth.users WHERE id = $1', [req.user.id]);
+      if (rows.length != 1) return handleFailure(res, { code: 401 });
+      user = rows[0];
+    } catch (err) {
+      return handleFailure(res, { err });
+    }
+    delete user.password;
     handleSuccess(res, user);
   });
 
@@ -48,84 +50,79 @@ async function define(app) {
     try {
       const passwordHashed = await utils.password.hash(password);
 
-      const { rows } = await pool.query('INSERT INTO auth.users(email, username, password) VALUES($1, $2, $3)', [email, username, passwordHashed]);
-      console.log(rows);
+      await pool.query('INSERT INTO auth.users(email, username, password) VALUES($1, $2, $3)', [email, username, passwordHashed]);
     } catch (err) {
       return handleFailure(res, { err });
     }
     return handleSuccess(res);
   });
 
-  // app.post('/users/login', async (req, res) => {
-  //   const { email, password } = req.body;
+  app.post('/users/login', async (req, res) => {
+    const { email, password } = req.body;
 
-  //   if (email.length === 0) return handleFailure(res, { warn: 'Email cannot be blank' });
-  //   if (password.length === 0) return handleFailure(res, { warn: 'Password cannot be blank' });
+    if (email.length === 0) return handleFailure(res, { warn: 'Email cannot be blank' });
+    if (password.length === 0) return handleFailure(res, { warn: 'Password cannot be blank' });
 
-  //   // check if email is in use
-  //   let user;
-  //   try {
-  //     user = await User.findOne({ email }).exec();
-  //   } catch (err) {
-  //     return handleFailure(res, { err });
-  //   }
-  //   if (!user) return handleFailure(res, { warn: 'User with the provided email does not exist' });
+    // check if email is in use
+    let user;
+    try {
+      const { rows } = await pool.query('SELECT * FROM auth.users WHERE email = $1', [email]);
+      if (rows.length != 1) return handleFailure(res, { warn: 'Email address in use' });
+      user = rows[0]
+    } catch (err) {
+      return handleFailure(res, { err });
+    }
 
-  //   // verify password
-  //   let success = false;
-  //   try {
-  //     success = await utils.password.verify(password, user.password);
-  //   } catch (err) {
-  //     return handleFailure(res, { err });
-  //   }
-  //   if (success !== true) return handleFailure(res, { warn: 'Invalid email or password ' });
+    // verify password
+    let success = false;
+    try {
+      success = await utils.password.verify(password, user.password);
+    } catch (err) {
+      return handleFailure(res, { err });
+    }
+    if (success !== true) return handleFailure(res, { warn: 'Invalid email or password ' });
 
-  //   // generate tokens
-  //   const accessToken = generateAccessToken(user._id);
-  //   const refreshToken = generateRefreshToken(user._id);
+    // generate tokens
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
 
-  //   const token = new Token({
-  //     token: refreshToken
-  //   });
+    // store refresh token
+    try {
+      await pool.query('INSERT INTO auth.tokens(id) VALUES($1)', [refreshToken]);
+    } catch (err) {
+      return handleFailure(res, { err });
+    }
+    return handleSuccess(res, { accessToken, refreshToken });
+  });
 
-  //   // store refresh token
-  //   try {
-  //     await token.save();
-  //   } catch (err) {
-  //     return handleFailure(res, { err });
-  //   }
-  //   return handleSuccess(res, { accessToken, refreshToken });
-  // });
+  app.post('/users/logout', async (req, res) => {
+    const { token } = req.body;
 
-  // app.post('/users/logout', async (req, res) => {
-  //   const { token } = req.body;
+    try {
+      await pool.query('DELETE FROM auth.tokens WHERE id = $1', [token]);
+    } catch (err) {
+      return handleFailure(res, { err });
+    }
+    return handleSuccess(res);
+  });
 
-  //   try {
-  //     const result = await Token.findOneAndDelete({ token });
-  //     if (!result) return handleFailure(res, { warn: 'Token does not exist' });
-  //   } catch (err) {
-  //     return handleFailure(res, { err });
-  //   }
-  //   return handleSuccess(res);
-  // });
+  app.post('/users/token', async (req, res) => {
+    const { token } = req.body;
+    if (!token) return handleFailure(res, { warn: 'Missing refresh token' });
 
-  // app.post('/users/token', async (req, res) => {
-  //   const { token } = req.body;
-  //   if (!token) return handleFailure(res, { warn: 'Missing refresh token' });
+    try {
+      const { rows } = await pool.query('SELECT * FROM auth.tokens WHERE id = $1', [token]);
+      if (rows.length !== 1) return handleFailure(res, { code: 401 });
+    } catch (err) {
+      return handleFailure(res, { err });
+    }
 
-  //   try {
-  //     const tokenExists = await Token.exists({ token });
-  //     if (!tokenExists) return handleFailure(res, { code: 401 });
-  //   } catch (err) {
-  //     return handleFailure(res, { err });
-  //   }
-
-  //   jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-  //     if (err) return handleFailure(res, { code: 401 });
-  //     const accessToken = generateAccessToken(user.id);
-  //     return handleSuccess(res, { accessToken });
-  //   });
-  // });
+    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+      if (err) return handleFailure(res, { code: 401 });
+      const accessToken = generateAccessToken(user.id);
+      return handleSuccess(res, { accessToken });
+    });
+  });
 }
 
 export default {
