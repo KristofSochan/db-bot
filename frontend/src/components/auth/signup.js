@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { error, warning } from '../common/alert';
+import { Link, useNavigate } from 'react-router-dom';
+import { error, success, warning } from '../common/alert';
 import { FaSpinner } from 'react-icons/fa';
 import './index.scss';
 import { baseURL } from '../common/constants.js';
@@ -21,10 +21,11 @@ async function signupUser(content) {
   const resultJSON = await result.json();
   if (resultJSON.warn) return warning(resultJSON.warn);
 
-  return true;
+  return success('Account successfully created');
  }
 
 export default function Signup() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState();
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
@@ -40,7 +41,8 @@ export default function Signup() {
         username,
         password
       });
-      console.log(result);
+      if (!result) return;
+      navigate('/signin');
     } catch (err) {
       error(err);
     } finally {

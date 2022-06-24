@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaSpinner } from 'react-icons/fa';
-import { error } from '../common/alert';
+import { error, warning } from '../common/alert';
 import './index.scss';
+import { baseURL } from '../common/constants.js';
 
-async function signinUser(credentials) {
-  return fetch('http://localhost:4000/users/signin', {
+async function signinUser(content) {
+  const url = baseURL + '/users/signin';
+  const options = {
     method: 'POST',
     headers: {
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(credentials)
-  })
-    .then(data => data.json())
+    body: JSON.stringify(content)
+  };
+  const result = await fetch(url, options);
+  if (result.status !== 200) return error(result.status + ' ' + result.statusText);
+
+  const resultJSON = await result.json();
+  if (resultJSON.warn) return warning(resultJSON.warn);
+
+  return resultJSON;
  }
 
 export default function Signin({ setToken }) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [loading, setLoading] = useState(false);
@@ -30,8 +40,9 @@ export default function Signin({ setToken }) {
         email,
         password
       });
-      console.log(token);
-      // setToken(token);
+      if (token === false) return;
+      setToken(token);
+      navigate('/dashboard');
     } catch (err) {
       error(err);
     } finally {

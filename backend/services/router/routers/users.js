@@ -42,7 +42,6 @@ async function define(app) {
       const { rows } = await pool.query('SELECT * FROM auth.users WHERE email = $1', [email]);
       if (rows.length > 0) return handleFailure(res, { warn: 'Email address in use' });
     } catch (err) {
-      console.log(err);
       return handleFailure(res, { err });
     }
 
@@ -51,7 +50,6 @@ async function define(app) {
       const { rows } = await pool.query('SELECT * FROM auth.users WHERE username = $1', [username]);
       if (rows.length > 0) return handleFailure(res, { warn: 'Username address in use' });
     } catch (err) {
-      console.log(err);
       return handleFailure(res, { err });
     }
 
