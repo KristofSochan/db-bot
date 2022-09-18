@@ -1,2 +1,2 @@
 # db-bot
-Discord integrated SQL database
+Discord integrated postgreSQL database
